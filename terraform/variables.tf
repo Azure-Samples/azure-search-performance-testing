@@ -1,11 +1,11 @@
 variable "RESOURCE_GROUP_NAME" {
   type    = string
-  default = "jmeter"
+  default = "myloadtest"
 }
 
 variable "LOCATION" {
   type    = string
-  default = "eastus"
+  default = "westeurope"
 }
 
 variable "PREFIX" {
@@ -60,12 +60,12 @@ variable "JMETER_DOCKER_PORT" {
 
 variable "JMETER_ACR_NAME" {
   type    = string
-  default = ""
+  default = "loadtestmyacr"
 }
 
 variable "JMETER_ACR_RESOURCE_GROUP_NAME" {
   type    = string
-  default = ""
+  default = "myloadtest"
 }
 
 variable "JMETER_STORAGE_QUOTA_GIGABYTES" {
@@ -86,9 +86,4 @@ variable "JMETER_RESULTS_FILE" {
 variable "JMETER_DASHBOARD_FOLDER" {
   type    = string
   default = "dashboard"
-}
-
-variable "JMETER_EXTRA_CLI_ARGUMENTS" {
-  type    = string
-  default = ""
 }

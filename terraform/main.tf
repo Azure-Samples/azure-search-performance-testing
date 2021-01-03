@@ -1,27 +1,22 @@
 data "azurerm_container_registry" "jmeter_acr" {
   name                = var.JMETER_ACR_NAME
-  resource_group_name = var.JMETER_ACR_RESOURCE_GROUP_NAME
+  resource_group_name = var.RESOURCE_GROUP_NAME
 }
 
 resource "random_id" "random" {
   byte_length = 4
 }
 
-resource "azurerm_resource_group" "jmeter_rg" {
-  name     = var.RESOURCE_GROUP_NAME
-  location = var.LOCATION
-}
-
 resource "azurerm_virtual_network" "jmeter_vnet" {
   name                = "${var.PREFIX}vnet"
-  location            = azurerm_resource_group.jmeter_rg.location
-  resource_group_name = azurerm_resource_group.jmeter_rg.name
+  location            = var.LOCATION
+  resource_group_name = var.RESOURCE_GROUP_NAME
   address_space       = ["${var.VNET_ADDRESS_SPACE}"]
 }
 
 resource "azurerm_subnet" "jmeter_subnet" {
   name                 = "${var.PREFIX}subnet"
-  resource_group_name  = azurerm_resource_group.jmeter_rg.name
+  resource_group_name  = var.RESOURCE_GROUP_NAME
   virtual_network_name = azurerm_virtual_network.jmeter_vnet.name
   address_prefix       = var.SUBNET_ADDRESS_PREFIX
 
@@ -39,8 +34,8 @@ resource "azurerm_subnet" "jmeter_subnet" {
 
 resource "azurerm_network_profile" "jmeter_net_profile" {
   name                = "${var.PREFIX}netprofile"
-  location            = azurerm_resource_group.jmeter_rg.location
-  resource_group_name = azurerm_resource_group.jmeter_rg.name
+  location            = var.LOCATION
+  resource_group_name = var.RESOURCE_GROUP_NAME
 
   container_network_interface {
     name = "${var.PREFIX}cnic"
@@ -54,8 +49,8 @@ resource "azurerm_network_profile" "jmeter_net_profile" {
 
 resource "azurerm_storage_account" "jmeter_storage" {
   name                = "${var.PREFIX}storage${random_id.random.hex}"
-  resource_group_name = azurerm_resource_group.jmeter_rg.name
-  location            = azurerm_resource_group.jmeter_rg.location
+  resource_group_name = var.RESOURCE_GROUP_NAME
+  location            = var.LOCATION
 
   account_tier             = "Standard"
   account_replication_type = "LRS"
@@ -75,8 +70,8 @@ resource "azurerm_storage_share" "jmeter_share" {
 resource "azurerm_container_group" "jmeter_workers" {
   count               = var.JMETER_WORKERS_COUNT
   name                = "${var.PREFIX}-worker${count.index}"
-  location            = azurerm_resource_group.jmeter_rg.location
-  resource_group_name = azurerm_resource_group.jmeter_rg.name
+  location            = var.LOCATION
+  resource_group_name = var.RESOURCE_GROUP_NAME
 
   ip_address_type = "private"
   os_type         = "Linux"
@@ -119,8 +114,8 @@ resource "azurerm_container_group" "jmeter_workers" {
 
 resource "azurerm_container_group" "jmeter_controller" {
   name                = "${var.PREFIX}-controller"
-  location            = azurerm_resource_group.jmeter_rg.location
-  resource_group_name = azurerm_resource_group.jmeter_rg.name
+  location            = var.LOCATION
+  resource_group_name = var.RESOURCE_GROUP_NAME
 
   ip_address_type = "private"
   os_type         = "Linux"
@@ -158,7 +153,7 @@ resource "azurerm_container_group" "jmeter_controller" {
     commands = [
       "/bin/sh",
       "-c",
-      "cd /jmeter; /entrypoint.sh -n -J server.rmi.ssl.disable=true -t ${var.JMETER_JMX_FILE} -l ${var.JMETER_RESULTS_FILE} -e -o ${var.JMETER_DASHBOARD_FOLDER} -R ${join(",", "${azurerm_container_group.jmeter_workers.*.ip_address}")} ${var.JMETER_EXTRA_CLI_ARGUMENTS}",
+      "cd /jmeter; /entrypoint.sh -n -J server.rmi.ssl.disable=true -t ${var.JMETER_JMX_FILE} -l ${var.JMETER_RESULTS_FILE} -e -o ${var.JMETER_DASHBOARD_FOLDER} -R ${join(",", "${azurerm_container_group.jmeter_workers.*.ip_address}")}",
     ]
   }
 }
