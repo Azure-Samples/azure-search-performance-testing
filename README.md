@@ -57,7 +57,7 @@ You should have the following tools installed:
 You should have the following Azure resources:
 
 * [Azure DevOps Project](https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=azure-devops&tabs=preview-page)
-* [Azure Container Registry (ACR)](https://azure.microsoft.com/en-us/services/container-registry/)
+* [Azure Container Registry (ACR)](https://azure.microsoft.com/en-us/services/container-registry/) with admin user enabled ![see screenshot example](./docs/img/container.png)
 
 ## A. Getting Started UI Mode
 
@@ -67,7 +67,7 @@ Enter https://dev.azure.com/your_org, create a new project and clone this repo
 
 ![Azure DevOps new project](./docs/img/devops_project.jpg)
 
-In repos tab, you will get a warning saying that the repo is empty. Just click on "Import a repository", then on the Clone URL copy this url: https://github.com/ignaciofls/jmeter-aci-terraform
+In the "Repos" tab, you will get a warning saying that the repo is empty. Just click on "Import a repository", then on the Clone URL copy this url: https://github.com/ignaciofls/jmeter-aci-terraform
 
 ![Import this code by cloning the repo](./docs/img/import_repo.jpg)
 
@@ -310,6 +310,11 @@ Please note that [not all regions](https://docs.microsoft.com/en-us/azure/contai
 * [User Manual: Remote Testing](https://jmeter.apache.org/usermanual/remote-test.html)
 * [User Manual: Apache JMeter Distributed Testing Step-by-step](https://jmeter.apache.org/usermanual/jmeter_distributed_testing_step_by_step.html)
 * [Azure DevOps CLI reference](https://docs.microsoft.com/en-us/cli/azure/ext/azure-devops/?view=azure-cli-latest)
+* [Create your Azure Cognitive Search instance and populate an index with clinical trials docs](https://github.com/cynotebo/KM-Ready-Lab/blob/master/KM-Ready-Lab/workshops/Module%201.md)
+
+## Future enhancements
+
+* Creation of Container Registry with IaC as part of Terraform script 
 
 ## Contributing
 
