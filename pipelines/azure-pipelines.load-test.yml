@@ -29,7 +29,12 @@ steps:
       --entrypoint "TestPlanCheck.sh" $(TF_VAR_JMETER_DOCKER_IMAGE) \
       --stats --tree-dump --jmx $(TF_VAR_JMETER_JMX_FILE)
   displayName: 'SETUP: Validate JMX File'
-
+ 
+- script: |
+    sudo sed 's/API_KEY/'$(API-KEY)'/g' $(JMETER_DIRECTORY_INPUT)/$(TF_VAR_JMETER_JMX_FILE) > $(JMETER_DIRECTORY_INPUT)/tmp.jmx
+    mv $(JMETER_DIRECTORY_INPUT)/tmp.jmx $(JMETER_DIRECTORY_INPUT)/$(TF_VAR_JMETER_JMX_FILE)
+  displayName: 'SETUP: Populate secret API_key for search in jmx config jmeter file'
+ 
 - task: AzureCLI@2
   displayName: 'SETUP: Prepare Terraform Credentials'
   inputs:
@@ -81,6 +86,7 @@ steps:
       RG=$(terraform output resource_group_name)
       NAME=$(terraform output jmeter_controller_name)
       echo "`date`: Started!"
+      sleep 10
       while [ $(az container show -g $RG -n $NAME --query "containers[0].instanceView.currentState.state" -o tsv) == "Running" ]; do
         echo "`date`: Still Running..."
         sleep 20
@@ -125,7 +131,7 @@ steps:
   inputs:
     testResultsFormat: 'JUnit'
     testResultsFiles: '$(JMETER_DIRECTORY_OUTPUT)/output.xml'
-    failTaskOnFailedTests: true
+    failTaskOnFailedTests: false
   displayName: 'RESULTS: Publish Load Testing Results'
 
 - publish: $(JMETER_DIRECTORY_OUTPUT)
@@ -134,6 +140,5 @@ steps:
   displayName: 'RESULTS: Publish Load Test Artifacts'
 
 - script: terraform destroy -auto-approve
-  condition: always()
   workingDirectory: ./terraform
   displayName: 'TEARDOWN: Run Terraform Destroy'
