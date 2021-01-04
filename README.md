@@ -17,9 +17,9 @@ urlFragment: "jmeter-aci-terraform"
 
 # Load Testing Pipeline with JMeter, ACI and Terraform
 
-This project is a load testing pipeline for Azure Cognitive Search that leverages [Apache JMeter](https://jmeter.apache.org/) as an open source load and performance testing tool and [Terraform](https://www.terraform.io/) to dynamically provision and destroy the required infrastructure on Azure.
+This pipeline helps to load test Azure Cognitive Search, it leverages [Apache JMeter](https://jmeter.apache.org/) as an open source load and performance testing tool and [Terraform](https://www.terraform.io/) to dynamically provision and destroy the required infrastructure on Azure. The JMeter workers and controller are hosted in Azure Container Instances (ACI) to allow VNET injection and Private Endpoint scenarios too.
 
-Note: This is a fork from [this original repo](https://github.com/Azure-Samples/jmeter-aci-terraform) customized for Azure Cognitive Search (ACS) REST API and syntax. It works with public facing IPs ACS and also with Private Endpoint ACS for private vnet scenarios where no public IP is exposed. 
+Note: This is a fork from [this original repo](https://github.com/Azure-Samples/jmeter-aci-terraform) customized for Azure Cognitive Search (ACS) REST API and syntax.
 
 ## Key concepts
 
@@ -128,6 +128,12 @@ After downloading the dashboard and unzipping it, open `dashboard/index.html` on
 
 Some screenshots here: 
 ![jmeter-latencies](./docs/img/latency_example.jpg) and ![jmeter-dashboard](./docs/img/dashboard_example.jpg)
+
+## JMeter Test Configuration
+
+The ![sample.jmx](./jmeter/sample.jmx) includes some modules to configure the HTTP request, headers and body that Azure Cognitive Search is expecting. It also includes subsections to configure the query distribution (ie 10 concurrent users per second during 1 minute), a section to define which search terms will be sent (to avoid distortion in latencies thanks to cache) that read an input CSV. For more details and examples: ![JMeter official doc](https://jmeter.apache.org/usermanual/component_reference.html).
+
+If you struggle adding new modules to the .jmx (the syntax can be quite tricky) I would suggest to use JMeter's UI and save the config to a temporary jmx file, analyze the new module and embed it in your jmx config file.
 
 ## Pipeline Configuration
 
