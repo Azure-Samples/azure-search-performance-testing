@@ -71,7 +71,7 @@ Create a Service Connection in Azure Devops (that internally will use a Service 
 
 ### 3. Creating the Variable Group
 
-Create a Variable Group as indicated ![in the Devops documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic#use-a-variable-group) and add the following variables:
+Create a Variable Group as indicated [in the Devops documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic#use-a-variable-group) and add the following variables:
 * TF_VAR_JMETER_ACR_NAME=$ACR_NAME
 * TF_VAR_JMETER_ACR_RESOURCE_GROUP_NAME=$ACR_RESOURCE_GROUP
 * TF_VAR_JMETER_DOCKER_IMAGE=$ACR_NAME.azurecr.io/jmeter
@@ -122,16 +122,16 @@ Some artifacts are published after the test ends. Some of them are a static JMet
 
 ![pipeline-artifacts](./docs/img/pipeline-artifacts.png)
 
-> You can also download these build artifacts using ![`az pipelines runs artifact download`](https://docs.microsoft.com/en-us/cli/azure/ext/azure-devops/pipelines/runs/artifact?view=azure-cli-latest#ext-azure-devops-az-pipelines-runs-artifact-download).
+> You can also download these build artifacts using [`az pipelines runs artifact download`](https://docs.microsoft.com/en-us/cli/azure/ext/azure-devops/pipelines/runs/artifact?view=azure-cli-latest#ext-azure-devops-az-pipelines-runs-artifact-download).
 
-After downloading the dashboard and unzipping it, open `dashboard/index.html` on your browser. Find an example under ![this path](./docs/loadtestresults_withprivendpoint_1xstandard.zip)
+After downloading the dashboard and unzipping it, open `dashboard/index.html` on your browser. Find an example under [this path](./docs/loadtestresults_withprivendpoint_1xstandard.zip)
 
 Some screenshots here: 
 ![jmeter-latencies](./docs/img/latency_example.jpg) and ![jmeter-dashboard](./docs/img/dashboard_example.jpg)
 
 ## JMeter Test Configuration
 
-The ![sample.jmx](./jmeter/sample.jmx) includes some modules to configure the HTTP request, headers and body that Azure Cognitive Search is expecting. It also includes subsections to configure the query distribution (ie 10 concurrent users per second during 1 minute), a section to define which search terms will be sent (to avoid distortion in latencies thanks to cache) that read an input CSV. For more details and examples: ![JMeter official doc](https://jmeter.apache.org/usermanual/component_reference.html).
+The [sample.jmx](./jmeter/sample.jmx) includes some modules to configure the HTTP request, headers and body that Azure Cognitive Search is expecting. It also includes subsections to configure the query distribution (ie 10 concurrent users per second during 1 minute), a section to define which search terms will be sent (to avoid distortion in latencies thanks to cache) that read an input CSV. For more details and examples: [JMeter official doc](https://jmeter.apache.org/usermanual/component_reference.html).
 
 If you struggle adding new modules to the .jmx (the syntax can be quite tricky) I would suggest to use JMeter's UI and save the config to a temporary jmx file, analyze the new module and embed it in your jmx config file.
 
