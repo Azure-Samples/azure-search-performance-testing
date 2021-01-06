@@ -67,7 +67,7 @@ In the "Repos" tab, you will get a warning saying that the repo is empty. Just c
 
 ### 2. Integrating with Azure credentials
 
-Create a Service Connection in Azure Devops (that internally will use a Service Principal) as indicated ![in the Devops documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection). Keep the Service Connection name as it will be used in next step.
+Create a Service Connection in Azure Devops (that internally will use a Service Principal) as indicated [in the Devops documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection). Keep the Service Connection name as it will be used in next step.
 
 ### 3. Creating the Variable Group
 
