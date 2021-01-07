@@ -67,38 +67,43 @@ In the "Repos" tab, you will get a warning saying that the repo is empty. Just c
 
 ### 2. Integrating with Azure credentials
 
-Create a Service Connection in Azure Devops (that internally will use a Service Principal) as indicated ![in the Devops documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection). Keep the Service Connection name as it will be used in next step.
+Create a Service Connection in Azure Devops (that internally will use a Service Principal) as indicated [in the Devops documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection). Keep the Service Connection name as it will be used in next step.
 
 ### 3. Creating the Variable Group
 
-Create a Variable Group as indicated ![in the Devops documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic#use-a-variable-group) and add the following variables:
+Create a Variable Group named `JMETER_TERRAFORM_SETTINGS` as indicated [in the Devops documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic) and add the following variables:
 * TF_VAR_JMETER_ACR_NAME=$ACR_NAME
 * TF_VAR_JMETER_ACR_RESOURCE_GROUP_NAME=$ACR_RESOURCE_GROUP
 * TF_VAR_JMETER_DOCKER_IMAGE=$ACR_NAME.azurecr.io/jmeter
-* AZURE_SERVICE_CONNECTION_NAME="your_service_connection_name" 
+* AZURE_SERVICE_CONNECTION_NAME=<your_service_connection_name> 
 * AZURE_SUBSCRIPTION_ID=$SUBSCRIPTION_ID
 
 ### 4. Creating and Running the Docker Pipeline
 
-Create a pipeline with "New Pipeline" (blue button, right side), chose "Azure Repos Git YAML", click on your existing repo (cloned in step 1), configure the pipeline with "Existing Azure Pipelines YAML file", the path of the existing file is "/pipelines/azure-pipelines.docker.yml". 
+Create a pipeline with **New Pipeline** (blue button, right side), chose **Azure Repos Git (YAML)**, click on your existing repo (cloned in step 1), configure the pipeline with **Existing Azure Pipelines YAML file**, the path of the existing file is **/pipelines/azure-pipelines.docker.yml**. 
 
 A couple of extra steps before going to the JMeter deployment pipeline:
 - Create two variables:
-    *ACR_NAME= myjmeteracr (or something similar)
-    *ACR_RESOURCE_GROUP= your_rg_name
-- Rename the new pipeline to 'jmeter-docker-build' (in the Pipelines tab, find the three dots inside your pipeline row and there you can rename it)
+    * ACR_NAME=<your_acr-name>
+    * ACR_RESOURCE_GROUP=<your_rg_name>
+- Rename the new pipeline to `jmeter-docker-build` (in the Pipelines tab, find the three dots inside your pipeline row and there you can rename it)
 
 ### 5. Creating the JMeter Pipeline
 
-Replicate the steps as in step #4 but with yaml path='pipelines/azure-pipelines.load-test.yml' and rename to 'jmeter-load-test'.
+Replicate the steps as in step #4 but with yaml file **pipelines/azure-pipelines.load-test.yml** and rename to **jmeter-load-test**.
 For this pipeline we will need some extra variables (on top of the two others):
-  * API-KEY set it to your key value (and keep it secret in Devops)
+
+  * API-KEY=<search_service_api_key>  (and keep it secret in devops)
   * TF_VAR_JMETER_JMX_FILE=sample.jmx
   * TF_VAR_JMETER_WORKERS_COUNT=1 (or as many as you want for scalability of the Jmeter workers)
 
 ### 6. Define the test definition inside your JMX file
 
-By default the test uses [`sample.jmx`](./jmeter/sample.jmx). This JMX file contains a test definition for performing HTTP requests on `your_instance.search.windows.net` endpoint through the `443` port. You can simply update the it with the test definition of your preference.
+By default the test uses [`sample.jmx`](./jmeter/sample.jmx). This JMX file contains a test definition for performing HTTP requests on `your_instance.search.windows.net` endpoint through the `443` port. 
+
+You'll need to update `your_instance` with the name of your search service within sample.jmx. You'll also need to update `your_index_name` to the correct index name.
+
+You can simply update the it with the test definition of your preference.
 
 ### 7. Run the JMeter Pipeline
 
@@ -122,16 +127,16 @@ Some artifacts are published after the test ends. Some of them are a static JMet
 
 ![pipeline-artifacts](./docs/img/pipeline-artifacts.png)
 
-> You can also download these build artifacts using ![`az pipelines runs artifact download`](https://docs.microsoft.com/en-us/cli/azure/ext/azure-devops/pipelines/runs/artifact?view=azure-cli-latest#ext-azure-devops-az-pipelines-runs-artifact-download).
+> You can also download these build artifacts using [`az pipelines runs artifact download`](https://docs.microsoft.com/en-us/cli/azure/ext/azure-devops/pipelines/runs/artifact?view=azure-cli-latest#ext-azure-devops-az-pipelines-runs-artifact-download).
 
-After downloading the dashboard and unzipping it, open `dashboard/index.html` on your browser. Find an example under ![this path](./docs/loadtestresults_withprivendpoint_1xstandard.zip)
+After downloading the dashboard and unzipping it, open `dashboard/index.html` on your browser. Find an example under [this path](./docs/loadtestresults_withprivendpoint_1xstandard.zip)
 
 Some screenshots here: 
 ![jmeter-latencies](./docs/img/latency_example.jpg) and ![jmeter-dashboard](./docs/img/dashboard_example.jpg)
 
 ## JMeter Test Configuration
 
-The ![sample.jmx](./jmeter/sample.jmx) includes some modules to configure the HTTP request, headers and body that Azure Cognitive Search is expecting. It also includes subsections to configure the query distribution (ie 10 concurrent users per second during 1 minute), a section to define which search terms will be sent (to avoid distortion in latencies thanks to cache) that read an input CSV. For more details and examples: ![JMeter official doc](https://jmeter.apache.org/usermanual/component_reference.html).
+The [sample.jmx](./jmeter/sample.jmx) includes some modules to configure the HTTP request, headers and body that Azure Cognitive Search is expecting. It also includes subsections to configure the query distribution (ie 10 concurrent users per second during 1 minute), a section to define which search terms will be sent (to avoid distortion in latencies thanks to cache) that read an input CSV. For more details and examples: [JMeter official doc](https://jmeter.apache.org/usermanual/component_reference.html).
 
 If you struggle adding new modules to the .jmx (the syntax can be quite tricky) I would suggest to use JMeter's UI and save the config to a temporary jmx file, analyze the new module and embed it in your jmx config file.
 
