@@ -50,7 +50,7 @@ variable "JMETER_CONTROLLER_MEMORY" {
 
 variable "JMETER_DOCKER_IMAGE" {
   type    = string
-  default = "justb4/jmeter:5.1.1"
+  default = "justb4/jmeter:5.3"
 }
 
 variable "JMETER_DOCKER_PORT" {
