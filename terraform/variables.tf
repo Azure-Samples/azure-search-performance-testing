@@ -40,12 +40,12 @@ variable "JMETER_WORKER_MEMORY" {
 
 variable "JMETER_CONTROLLER_CPU" {
   type    = string
-  default = "2.0"
+  default = "4.0"
 }
 
 variable "JMETER_CONTROLLER_MEMORY" {
   type    = string
-  default = "8.0"
+  default = "16.0"
 }
 
 variable "JMETER_DOCKER_IMAGE" {
