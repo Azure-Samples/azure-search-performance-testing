@@ -61,7 +61,7 @@ This section includes the header values needed for the REST API to go through th
 
 ### CSVDataSet 
 
-The search engine has a cache, if you repeat the same query the latency seen in the results will not be realistic compared to scenario where your users query the system with diverse terms. This module defines the input list used to query randomly
+The search engine has a cache, if you repeat the same query the latency seen in the results will not be realistic compared to scenario where your users query the system with diverse terms. This module defines the input list used to query starting from first line (if you need a random ordered term from the CSV use https://www.blazemeter.com/blog/introducing-the-random-csv-data-set-config-plugin-on-jmeter)
 
 ## Examples
 
