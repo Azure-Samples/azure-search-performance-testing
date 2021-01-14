@@ -50,58 +50,76 @@ On the `RESULTS` phase, a [JMeter Report Dashboard](https://jmeter.apache.org/us
 
 You should have the following Azure resources:
 
-* [Azure DevOps Organization](https://docs.microsoft.com/en-us/azure/devops/organizations/accounts/create-organization?view=azure-devops)
-* [Azure Container Registry (ACR)](https://azure.microsoft.com/en-us/services/container-registry/) with admin user enabled ![see screenshot example](./docs/img/container.png)
+* [Azure DevOps Organization](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
+* [Azure Container Registry (ACR)](https://azure.microsoft.com/services/container-registry/) with admin user enabled ![see screenshot example](./docs/img/container.png)
 
-## A. Getting Started UI Mode
+## Getting Started using the UI
 
-### 1. Create an Azure DevOps project and clone this repo
+### 1. Create an Azure DevOps project and import this repo
 
-Enter https://dev.azure.com/your_org, create a new project and clone this repo
+Go to [Azure DevOps](https://dev.azure.com/), create a new project, and import this repo. 
 
-![Azure DevOps new project](./docs/img/devops_project.jpg)
+![Azure DevOps new project](./docs/img/devops_project.png)
 
-In the "Repos" tab, you will get a warning saying that the repo is empty. Just click on "Import a repository", then on the Clone URL copy this url: https://github.com/ignaciofls/jmeter-aci-terraform
+Click into the **Repos** tab. You will get a warning saying that the repo is empty. Click on **Import a repository**, then for the Clone URL copy and paste this url: `https://github.com/ignaciofls/LoadTest-AzureCognitiveSearch-Jmeter-Terraform`
 
-![Import this code by cloning the repo](./docs/img/import_repo.jpg)
+![Import this code by cloning the repo](./docs/img/import-git-repo.png)
 
-### 2. Integrating with Azure credentials
+### 2. Create a service connection in Azure DevOps
 
-Create a Service Connection in Azure Devops (that internally will use a Service Principal) as indicated [in the Devops documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection). Keep the Service Connection name as it will be used in next step.
+Next, create a service connection in Azure Devops as described [in the DevOps documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection). This service connection will create a service principal allowing the Azure Pipelines to access the resource group. 
 
-### 3. Creating the Variable Group
+> NOTE: Make sure to add the service connection at the subscription level (don't specify a resource group) so the service connection has access to install resource providers.
 
-Create a Variable Group named `JMETER_TERRAFORM_SETTINGS` as indicated [in the Devops documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic) and add the following variables:
-* TF_VAR_JMETER_ACR_NAME=$ACR_NAME
-* TF_VAR_JMETER_ACR_RESOURCE_GROUP_NAME=$ACR_RESOURCE_GROUP
-* TF_VAR_JMETER_DOCKER_IMAGE=$ACR_NAME.azurecr.io/jmeter
-* AZURE_SERVICE_CONNECTION_NAME=<your_service_connection_name> 
-* AZURE_SUBSCRIPTION_ID=$SUBSCRIPTION_ID
+![Create a service connection](./docs/img/create-service-connection.png)
 
-### 4. Creating and Running the Docker Pipeline
+Make a note of the Service Connection name as it will be used in next step.
+
+### 3. Creating the variable group
+
+Create a variable group named `JMETER_TERRAFORM_SETTINGS` as described [in the DevOps documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/variable-groups?view=azure-devops&tabs=classic).
+
+
+Add the following variables to the variable group:
+
+* TF_VAR_JMETER_ACR_NAME = $ACR_NAME
+* TF_VAR_JMETER_ACR_RESOURCE_GROUP_NAME = $ACR_RESOURCE_GROUP
+* TF_VAR_JMETER_DOCKER_IMAGE = $ACR_NAME.azurecr.io/jmeter
+* AZURE_SERVICE_CONNECTION_NAME = <your_service_connection_name> 
+* AZURE_SUBSCRIPTION_ID = <your_subscription_id>
+
+When you're finished, the variable group should look similar to the image below:
+
+![Create a variable group](./docs/img/create-variable-group.png)
+
+### 4. Creating and running the Docker pipeline
 
 Create a pipeline with **New Pipeline** (blue button, right side), chose **Azure Repos Git (YAML)**, click on your existing repo (cloned in step 1), configure the pipeline with **Existing Azure Pipelines YAML file**, the path of the existing file is **/pipelines/azure-pipelines.docker.yml**. 
 
 A couple of extra steps before going to the JMeter deployment pipeline:
 - Create two variables:
-    * ACR_NAME=<your_acr-name>
+    * ACR_NAME=<your_acr_name>
     * ACR_RESOURCE_GROUP=<your_rg_name>
 - Rename the new pipeline to `jmeter-docker-build` (in the Pipelines tab, find the three dots inside your pipeline row and there you can rename it)
 
-### 5. Creating the JMeter Pipeline
+### 5. Creating the JMeter pipeline
 
 Replicate the steps as in step #4 but with yaml file **pipelines/azure-pipelines.load-test.yml** and rename to **jmeter-load-test**.
-For this pipeline we will need some extra variables (on top of the two others):
+For this pipeline we will need some extra variables along with the two others:
 
   * API-KEY=<search_service_api_key>  (and keep it secret in devops)
   * TF_VAR_JMETER_JMX_FILE=sample.jmx
-  * TF_VAR_JMETER_WORKERS_COUNT=1 (or as many as you want for scalability of the Jmeter workers)
+  * TF_VAR_JMETER_WORKERS_COUNT=1 (or as many as you want for scalability of the JMeter workers)
+  * ACR_NAME=<your_acr_name>
+  * ACR_RESOURCE_GROUP=<your_rg_name>
+
+Save the pipeline but don't run it quite yet.
 
 ### 6. Define the test definition inside your JMX file
 
 By default the test uses [`sample.jmx`](./jmeter/sample.jmx). This JMX file contains a test definition for performing HTTP requests on `your_instance.search.windows.net` endpoint through the `443` port. 
 
-You'll need to update `your_instance` with the name of your search service within sample.jmx. You'll also need to update `your_index_name` to the correct index name.
+> NOTE: You'll need to update `your_instance` with the name of your search service within sample.jmx. You'll also need to update `your_index_name` to the correct index name.
 
 You can simply update the it with the test definition of your preference.
 
