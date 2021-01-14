@@ -82,9 +82,9 @@ Create a variable group named `JMETER_TERRAFORM_SETTINGS` as described [in the D
 
 Add the following variables to the variable group:
 
-* TF_VAR_JMETER_ACR_NAME = $ACR_NAME
-* TF_VAR_JMETER_ACR_RESOURCE_GROUP_NAME = $ACR_RESOURCE_GROUP
-* TF_VAR_JMETER_DOCKER_IMAGE = $ACR_NAME.azurecr.io/jmeter
+* TF_VAR_JMETER_ACR_NAME = <your_azurecr_name>
+* TF_VAR_RESOURCE_GROUP_NAME = <your_rg_name>
+* TF_VAR_JMETER_DOCKER_IMAGE = <your_azurecr_name>.azurecr.io/jmeter
 * AZURE_SERVICE_CONNECTION_NAME = <your_service_connection_name> 
 * AZURE_SUBSCRIPTION_ID = <your_subscription_id>
 
@@ -98,8 +98,8 @@ Create a pipeline with **New Pipeline** (blue button, right side), chose **Azure
 
 A couple of extra steps before going to the JMeter deployment pipeline:
 - Create two variables:
-    * ACR_NAME=<your_acr_name>
-    * ACR_RESOURCE_GROUP=<your_rg_name>
+    * ACR_NAME = <your_azurecr_name>
+    * ACR_RESOURCE_GROUP = <your_rg_name>
 - Rename the new pipeline to `jmeter-docker-build` (in the Pipelines tab, find the three dots inside your pipeline row and there you can rename it)
 
 ### 5. Creating the JMeter pipeline
@@ -107,13 +107,13 @@ A couple of extra steps before going to the JMeter deployment pipeline:
 Replicate the steps as in step #4 but with yaml file **pipelines/azure-pipelines.load-test.yml** and rename to **jmeter-load-test**.
 For this pipeline we will need some extra variables along with the two others:
 
-  * API-KEY=<search_service_api_key>  (and keep it secret in devops)
-  * TF_VAR_JMETER_JMX_FILE=sample.jmx
-  * TF_VAR_JMETER_WORKERS_COUNT=1 (or as many as you want for scalability of the JMeter workers)
-  * ACR_NAME=<your_acr_name>
-  * ACR_RESOURCE_GROUP=<your_rg_name>
+  * API-KEY = <search_service_api_key>  (and keep it secret in devops)
+  * TF_VAR_JMETER_JMX_FILE = sample.jmx
+  * TF_VAR_JMETER_WORKERS_COUNT = 1 (or as many as you want for scalability of the JMeter workers)
+  * ACR_NAME = <your_azurecr_name>
+  * ACR_RESOURCE_GROUP = <your_rg_name>
 
-Save the pipeline but don't run it quite yet.
+Save the pipeline but don't run it yet. The [`sample.jmx`](./jmeter/sample.jmx) needs to be updated first as described in the next step.
 
 ### 6. Define the test definition inside your JMX file
 
