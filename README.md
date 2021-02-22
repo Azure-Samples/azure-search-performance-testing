@@ -5,14 +5,10 @@ languages:
 - python
 products:
 - azure
-- azure-devops
-- azure-storage
 - azure-cognitive-search
-extensions:
-  services: Containerinstance
-name: Load Testing Pipeline with JMeter, ACI and Terraform
-description: "Azure Pipeline that provisions JMeter on Azure Container Instance using Terraform for load testing scenarios with Azure Cognitive Search"
-urlFragment: "jmeter-aci-terraform"
+name: Azure Search Performance Tests
+description: "Performance testing tool for Azure Cognitive Search"
+urlFragment: "azure-search-perf"
 ---
 
 # Load Testing Pipeline with JMeter, ACI and Terraform
