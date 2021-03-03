@@ -57,7 +57,7 @@ Go to [Azure DevOps](https://dev.azure.com/), create a new project, and import t
 
 ![Azure DevOps new project](./docs/img/devops_project.png)
 
-Click into the **Repos** tab. You will get a warning saying that the repo is empty. Click on **Import a repository**, then for the Clone URL copy and paste this url: `https://github.com/ignaciofls/LoadTest-AzureCognitiveSearch-Jmeter-Terraform`
+Click into the **Repos** tab. You will get a warning saying that the repo is empty. Click on **Import a repository**, then for the Clone URL copy and paste this url: `https://github.com/Azure-Samples/azure-search-performance-testing`
 
 ![Import this code by cloning the repo](./docs/img/import-git-repo.png)
 
