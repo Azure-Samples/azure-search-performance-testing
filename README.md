@@ -59,7 +59,7 @@ Go to [Azure DevOps](https://dev.azure.com/), create a new project, and import t
 
 Click into the **Repos** tab. You will get a warning saying that the repo is empty. Click on **Import a repository**, then for the Clone URL copy and paste this url: `https://github.com/Azure-Samples/azure-search-performance-testing`
 
-![Import this code by cloning the repo](./docs/img/import-git-repo.png)
+<img src="./docs/img/import-git-repo.png" width="600">
 
 ### 2. Create a service connection in Azure DevOps
 
