@@ -59,7 +59,8 @@ Go to [Azure DevOps](https://dev.azure.com/), create a new project, and import t
 
 Click into the **Repos** tab. You will get a warning saying that the repo is empty. Click on **Import a repository**, then for the Clone URL copy and paste this url: `https://github.com/Azure-Samples/azure-search-performance-testing`
 
-<img src="./docs/img/import-git-repo.png" width="600">
+![Import this code by cloning the repo](./docs/img/import-git-repo.png)
+
 
 ### 2. Create a service connection in Azure DevOps
 
@@ -81,6 +82,7 @@ Add the following variables to the variable group:
 * TF_VAR_JMETER_ACR_NAME = <your_azurecr_name>
 * TF_VAR_RESOURCE_GROUP_NAME = <your_rg_name>
 * TF_VAR_JMETER_DOCKER_IMAGE = <your_azurecr_name>.azurecr.io/jmeter
+* TF_VAR_LOCATION = <your_preferred_azure_region> (i.e. eastus, westeurope, etc.)
 * AZURE_SERVICE_CONNECTION_NAME = <your_service_connection_name> 
 * AZURE_SUBSCRIPTION_ID = <your_subscription_id>
 
@@ -103,7 +105,9 @@ A couple of extra steps before going to the JMeter deployment pipeline:
 Replicate the steps as in step #4 but with yaml file **pipelines/azure-pipelines.load-test.yml** and rename to **jmeter-load-test**.
 For this pipeline we will need some extra variables along with the two others:
 
-  * API-KEY = <search_service_api_key>  (and keep it secret in devops)
+  * API_KEY = <search_service_api_key>  (and keep it secret in devops)
+  * SEARCH_SERVICE_NAME = <your_search_service_name>
+  * SEARCH_INDEX_NAME = <your_search_index_name>
   * TF_VAR_JMETER_JMX_FILE = sample.jmx
   * TF_VAR_JMETER_WORKERS_COUNT = 1 (or as many as you want for scalability of the JMeter workers)
   * ACR_NAME = <your_azurecr_name>
