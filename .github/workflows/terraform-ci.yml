@@ -14,9 +14,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Check if the Terraform files are formatted
-        run: terraform fmt -check ./terraform
+        run: terraform fmt -check ./terraform/main.tf
 
       - name: Validate Terraform files
         run: |
-          terraform init ./terraform/
-          terraform validate ./terraform
+          terraform init ./terraform/main.tf
+          terraform validate ./terraform/main.tf
