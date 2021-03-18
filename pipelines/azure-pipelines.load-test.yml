@@ -31,9 +31,7 @@ steps:
   displayName: 'SETUP: Validate JMX File'
  
 - script: |
-    sudo sed 's/API_KEY/'$(API_KEY)'/g' $(JMETER_DIRECTORY_INPUT)/$(TF_VAR_JMETER_JMX_FILE) > $(JMETER_DIRECTORY_INPUT)/tmp.jmx
-    sudo sed 's/SEARCH_SERVICE_NAME/'$(SEARCH_SERVICE_NAME)'/g' $(JMETER_DIRECTORY_INPUT)/$(TF_VAR_JMETER_JMX_FILE) > $(JMETER_DIRECTORY_INPUT)/tmp.jmx
-    sudo sed 's/SEARCH_INDEX_NAME/'$(SEARCH_INDEX_NAME)'/g' $(JMETER_DIRECTORY_INPUT)/$(TF_VAR_JMETER_JMX_FILE) > $(JMETER_DIRECTORY_INPUT)/tmp.jmx
+    sudo sed 's/API_KEY/'$(API_KEY)'/g; s/SEARCH_SERVICE_NAME/'$(SEARCH_SERVICE_NAME)'/g; s/SEARCH_INDEX_NAME/'$(SEARCH_INDEX_NAME)'/g' $(JMETER_DIRECTORY_INPUT)/$(TF_VAR_JMETER_JMX_FILE) > $(JMETER_DIRECTORY_INPUT)/tmp.jmx
     mv $(JMETER_DIRECTORY_INPUT)/tmp.jmx $(JMETER_DIRECTORY_INPUT)/$(TF_VAR_JMETER_JMX_FILE)
   displayName: 'SETUP: Populate API key, service name, and index name for search in jmx config jmeter file'
  
