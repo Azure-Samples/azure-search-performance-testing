@@ -41,11 +41,11 @@
               </elementProp>
             </collectionProp>
           </elementProp>
-          <stringProp name="HTTPSampler.domain">your_instance.search.windows.net</stringProp>
+          <stringProp name="HTTPSampler.domain">SEARCH_SERVICE_NAME.search.windows.net</stringProp>
           <stringProp name="HTTPSampler.port">443</stringProp>
           <stringProp name="HTTPSampler.protocol">https</stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/indexes/your_index_name/docs/search?api-version=2020-06-30</stringProp>
+          <stringProp name="HTTPSampler.path">/indexes/SEARCH_INDEX_NAME/docs/search?api-version=2020-06-30</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">false</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>

@@ -48,6 +48,7 @@ You should have the following Azure resources:
 
 * [Azure DevOps Organization](https://docs.microsoft.com/azure/devops/organizations/accounts/create-organization?view=azure-devops)
 * [Azure Container Registry (ACR)](https://azure.microsoft.com/services/container-registry/) with admin user enabled ![see screenshot example](./docs/img/container.png)
+* An Azure Cognitive Search Service
 
 ## Getting Started using the UI
 
@@ -61,9 +62,10 @@ Click into the **Repos** tab. You will get a warning saying that the repo is emp
 
 ![Import this code by cloning the repo](./docs/img/import-git-repo.png)
 
+
 ### 2. Create a service connection in Azure DevOps
 
-Next, create a service connection in Azure Devops as described [in the DevOps documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection). This service connection will create a service principal allowing the Azure Pipelines to access the resource group. 
+Next, create a service connection in Azure Devops as described in the [DevOps documentation](https://docs.microsoft.com/en-us/azure/devops/pipelines/library/service-endpoints?view=azure-devops&tabs=yaml#create-a-service-connection). This service connection will create a service principal allowing the Azure Pipelines to access the resource group. 
 
 > NOTE: Make sure to add the service connection at the subscription level (don't specify a resource group) so the service connection has access to install resource providers.
 
@@ -81,7 +83,8 @@ Add the following variables to the variable group:
 * TF_VAR_JMETER_ACR_NAME = <your_azurecr_name>
 * TF_VAR_RESOURCE_GROUP_NAME = <your_rg_name>
 * TF_VAR_JMETER_DOCKER_IMAGE = <your_azurecr_name>.azurecr.io/jmeter
-* AZURE_SERVICE_CONNECTION_NAME = <your_service_connection_name> 
+* TF_VAR_LOCATION = <your_preferred_azure_region> (i.e. eastus, westeurope, etc.)
+* AZURE_SERVICE_CONNECTION_NAME = <your_service_connection_name>
 * AZURE_SUBSCRIPTION_ID = <your_subscription_id>
 
 When you're finished, the variable group should look similar to the image below:
@@ -90,34 +93,31 @@ When you're finished, the variable group should look similar to the image below:
 
 ### 4. Creating and running the Docker pipeline
 
-Create a pipeline with **New Pipeline** (blue button, right side), chose **Azure Repos Git (YAML)**, click on your existing repo (cloned in step 1), configure the pipeline with **Existing Azure Pipelines YAML file**, the path of the existing file is **/pipelines/azure-pipelines.docker.yml**. 
+Create a pipeline with **New Pipeline** (blue button, right side), chose **Azure Repos Git (YAML)**, click on your existing repo (cloned in step 1), configure the pipeline with **Existing Azure Pipelines YAML file**, the path of the existing file is **/pipelines/azure-pipelines.docker.yml**.
 
-A couple of extra steps before going to the JMeter deployment pipeline:
-- Create two variables:
-    * ACR_NAME = <your_azurecr_name>
-    * ACR_RESOURCE_GROUP = <your_rg_name>
-- Rename the new pipeline to `jmeter-docker-build` (in the Pipelines tab, find the three dots inside your pipeline row and there you can rename it)
+Rename the new pipeline to `jmeter-docker-build` so you won't confuse it with the pipeline created in the next step (in the Pipelines tab, find the three dots inside your pipeline row and there you can rename it).
+
+Run this pipeline before proceeding to the next step.
 
 ### 5. Creating the JMeter pipeline
 
-Replicate the steps as in step #4 but with yaml file **pipelines/azure-pipelines.load-test.yml** and rename to **jmeter-load-test**.
-For this pipeline we will need some extra variables along with the two others:
+Replicate the steps as in step #4 but with yaml file **pipelines/azure-pipelines.load-test.yml** and rename it to **jmeter-load-test**.
 
-  * API-KEY = <search_service_api_key>  (and keep it secret in devops)
+For this pipeline you will need some additional variables:
+
+  * API_KEY = <search_service_api_key>  (and keep it secret in devops)
+  * SEARCH_SERVICE_NAME = <your_search_service_name>
+  * SEARCH_INDEX_NAME = <your_search_index_name>
   * TF_VAR_JMETER_JMX_FILE = sample.jmx
   * TF_VAR_JMETER_WORKERS_COUNT = 1 (or as many as you want for scalability of the JMeter workers)
-  * ACR_NAME = <your_azurecr_name>
-  * ACR_RESOURCE_GROUP = <your_rg_name>
 
 Save the pipeline but don't run it yet. The [`sample.jmx`](./jmeter/sample.jmx) needs to be updated first as described in the next step.
 
 ### 6. Define the test definition inside your JMX file
 
-By default the test uses [`sample.jmx`](./jmeter/sample.jmx). This JMX file contains a test definition for performing HTTP requests on `your_instance.search.windows.net` endpoint through the `443` port. 
+By default the test uses [`sample.jmx`](./jmeter/sample.jmx). This JMX file contains a test definition for performing HTTP requests on `<your-search-service-name>.search.windows.net` endpoint through the `443` port. 
 
-> NOTE: You'll need to update `your_instance` with the name of your search service within sample.jmx. You'll also need to update `your_index_name` to the correct index name.
-
-You can simply update the it with the test definition of your preference.
+You can simply update the JMX file with the test definition of your preference. You can find more details on updating the test definition in [jmeter/README.md](./jmeter/README.md).
 
 ### 7. Run the JMeter Pipeline
 

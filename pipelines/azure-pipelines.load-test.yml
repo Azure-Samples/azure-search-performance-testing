@@ -31,9 +31,9 @@ steps:
   displayName: 'SETUP: Validate JMX File'
  
 - script: |
-    sudo sed 's/API_KEY/'$(API-KEY)'/g' $(JMETER_DIRECTORY_INPUT)/$(TF_VAR_JMETER_JMX_FILE) > $(JMETER_DIRECTORY_INPUT)/tmp.jmx
+    sudo sed 's/API_KEY/'$(API_KEY)'/g; s/SEARCH_SERVICE_NAME/'$(SEARCH_SERVICE_NAME)'/g; s/SEARCH_INDEX_NAME/'$(SEARCH_INDEX_NAME)'/g' $(JMETER_DIRECTORY_INPUT)/$(TF_VAR_JMETER_JMX_FILE) > $(JMETER_DIRECTORY_INPUT)/tmp.jmx
     mv $(JMETER_DIRECTORY_INPUT)/tmp.jmx $(JMETER_DIRECTORY_INPUT)/$(TF_VAR_JMETER_JMX_FILE)
-  displayName: 'SETUP: Populate secret API_key for search in jmx config jmeter file'
+  displayName: 'SETUP: Populate API key, service name, and index name for search in jmx config jmeter file'
  
 - task: AzureCLI@2
   displayName: 'SETUP: Prepare Terraform Credentials'
@@ -63,14 +63,18 @@ steps:
   workingDirectory: ./terraform
   displayName: 'SETUP: Run Terraform Apply (target=file share)'
 
-- script: |
-    azcopy \
-    --source $(JMETER_DIRECTORY_INPUT) \
-    --destination $(terraform output storage_file_share_url) \
-    --dest-key $(terraform output storage_account_key) \
-    --recursive
-  workingDirectory: ./terraform
+- task: AzureCLI@2
   displayName: 'SETUP: Transfer JMeter Files to Storage Account'
+  inputs:
+    azureSubscription: $(AZURE_SERVICE_CONNECTION_NAME)
+    scriptType: 'bash'
+    workingDirectory: ./terraform
+    scriptLocation: 'inlineScript'
+    inlineScript: |
+      SHARENAME=$(terraform output storage_file_share_name)
+      ACCOUNTNAME=$(terraform output storage_account_name)
+      STGKEY=$(terraform output storage_account_key)
+      az storage file upload-batch --account-key $STGKEY --account-name $ACCOUNTNAME --destination $SHARENAME --source $(JMETER_DIRECTORY_INPUT)
 
 - script: terraform apply -auto-approve
   workingDirectory: ./terraform
@@ -107,18 +111,19 @@ steps:
   displayName: 'RESULTS: Collect JMeter Controller and Worker Logs'
 
 - task: AzureCLI@2
+  displayName: 'RESULTS: Download Jmeter results'
   inputs:
     azureSubscription: $(AZURE_SERVICE_CONNECTION_NAME)
+    scriptType: 'bash'
     workingDirectory: ./terraform
-    scriptType: bash
-    scriptLocation: inlineScript
+    scriptLocation: 'inlineScript'
     inlineScript: |
-      azcopy \
-        --source $(terraform output storage_file_share_url) \
-        --destination $(JMETER_DIRECTORY_OUTPUT) \
-        --source-key $(terraform output storage_account_key) \
-        --recursive
-  displayName: 'RESULTS: Get JMeter Artifacts'
+      RG=$(terraform output resource_group_name)
+      SHARENAME=$(terraform output storage_file_share_name)
+      STGKEY=$(terraform output storage_account_key)
+      ACCOUNTNAME=$(terraform output storage_account_name)
+      mkdir $(System.DefaultWorkingDirectory)/results
+      az storage file download-batch --account-key $STGKEY --account-name $ACCOUNTNAME --destination $(JMETER_DIRECTORY_OUTPUT) --no-progress --source $SHARENAME
 
 - script: |
     JMETER_RESULTS=$(JMETER_DIRECTORY_OUTPUT)/$(terraform output jmeter_results_file)
