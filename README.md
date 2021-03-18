@@ -84,7 +84,7 @@ Add the following variables to the variable group:
 * TF_VAR_RESOURCE_GROUP_NAME = <your_rg_name>
 * TF_VAR_JMETER_DOCKER_IMAGE = <your_azurecr_name>.azurecr.io/jmeter
 * TF_VAR_LOCATION = <your_preferred_azure_region> (i.e. eastus, westeurope, etc.)
-* AZURE_SERVICE_CONNECTION_NAME = <your_service_connection_name> 
+* AZURE_SERVICE_CONNECTION_NAME = <your_service_connection_name>
 * AZURE_SUBSCRIPTION_ID = <your_subscription_id>
 
 When you're finished, the variable group should look similar to the image below:
@@ -93,9 +93,11 @@ When you're finished, the variable group should look similar to the image below:
 
 ### 4. Creating and running the Docker pipeline
 
-Create a pipeline with **New Pipeline** (blue button, right side), chose **Azure Repos Git (YAML)**, click on your existing repo (cloned in step 1), configure the pipeline with **Existing Azure Pipelines YAML file**, the path of the existing file is **/pipelines/azure-pipelines.docker.yml**. 
+Create a pipeline with **New Pipeline** (blue button, right side), chose **Azure Repos Git (YAML)**, click on your existing repo (cloned in step 1), configure the pipeline with **Existing Azure Pipelines YAML file**, the path of the existing file is **/pipelines/azure-pipelines.docker.yml**.
 
 Rename the new pipeline to `jmeter-docker-build` so you won't confuse it with the pipeline created in the next step (in the Pipelines tab, find the three dots inside your pipeline row and there you can rename it).
+
+Run this pipeline before proceeding to the next step.
 
 ### 5. Creating the JMeter pipeline
 
